@@ -12,39 +12,60 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-        $filter = $request->get('filter', 'all');
+        $filter = $request->get('filter', 'all'); // ambil filter dari tab
+        $search = $request->get('search');
+        $status = $request->get('status');
 
         $query = Task::query();
 
-        if ($request->filled('search')) {
-            $s = $request->search;
-            $query->where(function($q) use ($s) {
-                $q->where('title', 'like', "%{$s}%")
-                  ->orWhere('description', 'like', "%{$s}%");
+        // Search
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
-        if ($request->filled('status') && $request->status !== 'all') {
-            $query->where('status', $request->status);
+        // Filter Tab (All, Pending, Completed)
+        if ($filter === 'pending') {
+            $query->whereIn('status', ['To-Do', 'In Progress']);
+        } elseif ($filter === 'completed') {
+            $query->where('status', 'Done');
         }
 
+        // Extra filter (dropdown All Status)
+        if (!empty($status) && $status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        // Order by deadline (prioritaskan yg ada deadline)
         $query->orderByRaw('deadline IS NULL, deadline ASC');
 
+        // Pagination
         $tasks = $query->paginate(10)->withQueryString();
 
-        $total     = Task::count();
-        $pending   = Task::whereIn('status', ['To-Do','In Progress'])->count();
-        $completed = Task::where('status','Done')->count();
-
-        $todo      = Task::where('status', 'To-Do')->count();
-        $inprogress= Task::where('status', 'In Progress')->count();
-        $progress  = $total > 0 ? round(($completed / $total) * 100) : 0;
+        // Counters
+        $total      = Task::count();
+        $pending    = Task::whereIn('status', ['To-Do','In Progress'])->count();
+        $completed  = Task::where('status','Done')->count();
+        $todo       = Task::where('status', 'To-Do')->count();
+        $inprogress = Task::where('status', 'In Progress')->count();
+        $progress   = $total > 0 ? round(($completed / $total) * 100) : 0;
 
         if ($request->ajax()) {
             return view('tasks._list', compact('tasks'))->render();
         }
 
-        return view('tasks.index', compact('tasks','total','pending','completed','filter','todo','inprogress','progress'));
+        return view('tasks.index', compact(
+            'tasks',
+            'total',
+            'pending',
+            'completed',
+            'filter',
+            'todo',
+            'inprogress',
+            'progress'
+        ));
     }
 
     /**
