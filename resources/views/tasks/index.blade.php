@@ -50,6 +50,27 @@
     </li>
   </ul>
 
+  <form method="GET" action="{{ route('tasks.index') }}" class="row g-2 mb-4">
+    <div class="col-md-4">
+        <input type="text" name="search" value="{{ request('search') }}" class="form-control"
+               placeholder="Search tasks...">
+    </div>
+    <div class="col-md-3">
+        <select name="status" class="form-select">
+            <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>All Status</option>
+            <option value="To-Do" {{ request('status') == 'To-Do' ? 'selected' : '' }}>To-Do</option>
+            <option value="In Progress" {{ request('status') == 'In Progress' ? 'selected' : '' }}>In Progress</option>
+            <option value="Done" {{ request('status') == 'Done' ? 'selected' : '' }}>Done</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+    </div>
+    <div class="col-md-2">
+        <a href="{{ route('tasks.index') }}" class="btn btn-secondary w-100">Reset</a>
+    </div>
+  </form>
+
   <div id="taskList">
     @include('tasks._list', ['tasks' => $tasks])
   </div>

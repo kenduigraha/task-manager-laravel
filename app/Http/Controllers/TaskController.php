@@ -16,15 +16,21 @@ class TaskController extends Controller
 
         $query = Task::query();
 
-        if ($filter === 'pending') {
-            $query->whereIn('status', ['To-Do', 'In Progress']);
-        } elseif ($filter === 'completed') {
-            $query->where('status', 'Done');
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function($q) use ($s) {
+                $q->where('title', 'like', "%{$s}%")
+                  ->orWhere('description', 'like', "%{$s}%");
+            });
+        }
+
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
         }
 
         $query->orderByRaw('deadline IS NULL, deadline ASC');
 
-        $tasks = $query->get();
+        $tasks = $query->paginate(10)->withQueryString();
 
         $total     = Task::count();
         $pending   = Task::whereIn('status', ['To-Do','In Progress'])->count();
