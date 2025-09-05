@@ -50,6 +50,24 @@
     </li>
   </ul>
 
+  <div class="mb-4">
+    <h5>Status Progress</h5>
+    <div class="progress" style="height: 25px;">
+        <div class="progress-bar bg-success" role="progressbar" 
+             style="width: {{ $progress }}%" 
+             aria-valuenow="{{ $progress }}" aria-valuemin="0" aria-valuemax="100">
+            {{ $progress }}%
+        </div>
+    </div>
+
+    <div class="mt-2">
+        <span class="badge bg-secondary">Total: {{ $total }}</span>
+        <span class="badge bg-danger">To-Do: {{ $todo }}</span>
+        <span class="badge bg-warning text-dark">In Progress: {{ $inprogress }}</span>
+        <span class="badge bg-success">Done: {{ $completed }}</span>
+    </div>
+  </div>
+
   <form method="GET" action="{{ route('tasks.index') }}" class="row g-2 mb-4">
     <div class="col-md-4">
         <input type="text" name="search" value="{{ request('search') }}" class="form-control"

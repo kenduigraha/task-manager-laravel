@@ -17,6 +17,8 @@
     .task-card { border-radius:12px; box-shadow:0 3px 10px rgba(0,0,0,.04); }
     .empty-soft { background:#FFFBEB; border-radius:16px; }
     .done { text-decoration: line-through; opacity: .65; }
+    .progress { border-radius: 20px; overflow: hidden; }
+    .progress-bar { font-weight: bold; }
   </style>
 </head>
 <body>

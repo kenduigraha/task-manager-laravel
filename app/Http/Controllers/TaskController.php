@@ -36,11 +36,15 @@ class TaskController extends Controller
         $pending   = Task::whereIn('status', ['To-Do','In Progress'])->count();
         $completed = Task::where('status','Done')->count();
 
+        $todo      = Task::where('status', 'To-Do')->count();
+        $inprogress= Task::where('status', 'In Progress')->count();
+        $progress  = $total > 0 ? round(($completed / $total) * 100) : 0;
+
         if ($request->ajax()) {
             return view('tasks._list', compact('tasks'))->render();
         }
 
-        return view('tasks.index', compact('tasks','total','pending','completed','filter'));
+        return view('tasks.index', compact('tasks','total','pending','completed','filter','todo','inprogress','progress'));
     }
 
     /**
